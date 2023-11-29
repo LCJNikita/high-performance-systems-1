@@ -1,8 +1,12 @@
 package ru.itmo.hpsproject.model.entity;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.itmo.hpsproject.model.enums.Rarity;
+
+import java.util.List;
 
 @Entity(name = "items")
 @Data
@@ -12,8 +16,16 @@ public class ItemEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String title;
-    @OneToOne
+
+    @Column(nullable = false)
+    @NotBlank
+    private String name;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Rarity rarity;
+
+    @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
 }
