@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.Range;
 
 @Entity(name = "marketplace_items")
 @Data
@@ -19,5 +20,7 @@ public class MarketplaceItemEntity {
     @JoinColumn(name = "item_id", nullable = false)
     private ItemEntity item;
 
+    @Column(nullable = false)
+    @Range(min = 1, max = 1000000)
     private int price;
 }
