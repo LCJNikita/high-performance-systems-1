@@ -35,8 +35,8 @@ public class ItemsController {
         }
     }
 
-    @GetMapping("/item")
-    public ResponseEntity<?> getItemById(@RequestBody @Positive Long itemId) {
+    @GetMapping("/item/{itemId}")
+    public ResponseEntity<?> getItemById(@PathVariable @Positive Long itemId) {
         try {
             ItemEntity itemEntity = itemsService.findItemById(itemId);
             ItemDto itemDto = DtoConverter.itemEntityToDto(itemEntity);
