@@ -52,7 +52,7 @@ public class ItemsController {
         if (itemEntity.isPresent()) {
             return ResponseEntity.ok("Айтем успешно удален");
         } else {
-            return ResponseEntity.badRequest().body("Айтем не найден");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Айтем с id: " + itemId + " не найден");
         }
     }
 

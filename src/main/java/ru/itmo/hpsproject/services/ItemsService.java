@@ -37,7 +37,7 @@ public class ItemsService {
 
     public ItemEntity findItemById(Long itemId) throws NotFoundException {
         return itemsRepository.findById(itemId)
-                .orElseThrow(() -> new NotFoundException("Айтем не найден"));
+                .orElseThrow(() -> new NotFoundException("Айтем с id: " + itemId + " не найден"));
     }
 
     public Optional<ItemEntity> deleteItemById(Long itemId) {
