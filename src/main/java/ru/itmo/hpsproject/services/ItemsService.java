@@ -28,7 +28,7 @@ public class ItemsService {
 
     public ItemEntity generateRandomItemForUser(Long userId) throws NotFoundException {
         UserEntity user = usersRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
+                .orElseThrow(() -> new NotFoundException("Юзер с id: " + userId + " не найден"));
 
         ItemEntity randomItem = createRandomItem();
         randomItem.setUser(user);
