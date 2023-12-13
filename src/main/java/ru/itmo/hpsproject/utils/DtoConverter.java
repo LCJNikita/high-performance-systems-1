@@ -1,7 +1,7 @@
 package ru.itmo.hpsproject.utils;
 
-import ru.itmo.hpsproject.model.dto.ItemDto;
-import ru.itmo.hpsproject.model.dto.MarketplaceItemDto;
+import ru.itmo.hpsproject.model.dto.Output.ItemDto;
+import ru.itmo.hpsproject.model.dto.Output.MarketplaceItemDto;
 import ru.itmo.hpsproject.model.entity.ItemEntity;
 import ru.itmo.hpsproject.model.entity.MarketplaceItemEntity;
 

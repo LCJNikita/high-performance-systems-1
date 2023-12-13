@@ -56,18 +56,28 @@ public class MarketplaceService {
             throw new IllegalArgumentException("Item with id " + itemId + " is already listed on the marketplace");
         }
 
+//        if (!itemEntity.getUser().getItems().contains(itemEntity)) {
+//            throw new IllegalArgumentException("Item with id " + itemId + " is not item of user");
+//        }
+
+        // Добавить проверку, что это айтем пользователя
+
         MarketplaceItemEntity marketplaceItemEntity = new MarketplaceItemEntity();
         marketplaceItemEntity.setItem(itemEntity);
         marketplaceItemEntity.setPrice(price);
         return marketplaceRepository.save(marketplaceItemEntity);
     }
 
-    public void purchaseMarketplaceItem(Long buyerId, Long marketplaceItemId) throws NotFoundException, NotEnoughMoneyException {
+    public void purchaseMarketplaceItem(Long buyerId, Long marketplaceItemId) throws NotFoundException, NotEnoughMoneyException, IllegalArgumentException {
         UserEntity buyer = usersRepository.findById(buyerId)
                 .orElseThrow(() -> new NotFoundException("Buyer with id " + buyerId + " not found"));
 
         MarketplaceItemEntity marketplaceItem = marketplaceRepository.findById(marketplaceItemId)
                 .orElseThrow(() -> new NotFoundException("Item with id " + marketplaceItemId + " not found on the marketplace"));
+
+        if (marketplaceItem.getItem().getUser().getId().equals(buyer.getId())) {
+            throw new IllegalArgumentException("Нельзя купить айтем у самого себя");
+        }
 
         if (buyer.getBalance() < marketplaceItem.getPrice()) {
             throw new NotEnoughMoneyException();

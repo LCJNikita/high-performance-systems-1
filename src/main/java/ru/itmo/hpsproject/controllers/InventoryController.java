@@ -4,12 +4,9 @@ import jakarta.validation.constraints.Positive;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ru.itmo.hpsproject.exeptions.NotFoundException;
-import ru.itmo.hpsproject.model.dto.ItemDto;
+import ru.itmo.hpsproject.model.dto.Output.ItemDto;
 import ru.itmo.hpsproject.model.entity.ItemEntity;
 import ru.itmo.hpsproject.services.InventoryService;
 import ru.itmo.hpsproject.utils.DtoConverter;
@@ -27,8 +24,8 @@ public class InventoryController {
         this.inventoryService = inventoryService;
     }
 
-    @GetMapping("/{userId}")
-    public ResponseEntity<?> getAll(@PathVariable @Positive Long userId) {
+    @GetMapping
+    public ResponseEntity<?> getAll(@Positive @RequestParam Long userId) {
         try {
             List<ItemEntity> inventoryItemsEntities = inventoryService.findUserInventory(userId);
             List<ItemDto> inventoryItemsDtos = inventoryItemsEntities

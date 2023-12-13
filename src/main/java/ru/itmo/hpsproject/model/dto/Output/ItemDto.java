@@ -1,4 +1,4 @@
-package ru.itmo.hpsproject.model.dto;
+package ru.itmo.hpsproject.model.dto.Output;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
