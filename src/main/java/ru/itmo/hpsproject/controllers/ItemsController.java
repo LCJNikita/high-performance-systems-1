@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.itmo.hpsproject.exeptions.NotFoundException;
-import ru.itmo.hpsproject.model.dto.ItemDto;
+import ru.itmo.hpsproject.model.dto.Output.ItemDto;
 import ru.itmo.hpsproject.model.entity.ItemEntity;
 import ru.itmo.hpsproject.services.ItemsService;
 import ru.itmo.hpsproject.utils.DtoConverter;
@@ -24,8 +24,8 @@ public class ItemsController {
         this.itemsService = itemsService;
     }
 
-    @PostMapping("/generate/{userId}")
-    public ResponseEntity<?> generateRandomItem(@PathVariable @Positive Long userId) {
+    @PostMapping("/generate")
+    public ResponseEntity<?> generateRandomItem(@Positive @RequestParam Long userId) {
         try {
             ItemEntity itemEntity = itemsService.generateRandomItemForUser(userId);
             ItemDto itemDto = DtoConverter.itemEntityToDto(itemEntity);
@@ -35,8 +35,8 @@ public class ItemsController {
         }
     }
 
-    @GetMapping("/item/{itemId}")
-    public ResponseEntity<?> getItemById(@PathVariable @Positive Long itemId) {
+    @GetMapping("/item")
+    public ResponseEntity<?> getItemById(@Positive @RequestParam Long itemId) {
         try {
             ItemEntity itemEntity = itemsService.findItemById(itemId);
             ItemDto itemDto = DtoConverter.itemEntityToDto(itemEntity);
@@ -47,7 +47,7 @@ public class ItemsController {
     }
 
     @DeleteMapping("/delete-item/{itemId}")
-    public ResponseEntity<?> deleteItemById(@PathVariable @Positive Long itemId) {
+    public ResponseEntity<?> deleteItemById(@Positive @PathVariable Long itemId) {
         Optional<ItemEntity> itemEntity = itemsService.deleteItemById(itemId);
         if (itemEntity.isPresent()) {
             return ResponseEntity.ok("Айтем успешно удален");
