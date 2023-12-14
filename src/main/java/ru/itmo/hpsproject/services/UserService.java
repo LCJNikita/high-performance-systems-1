@@ -13,7 +13,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.itmo.hpsproject.exceptions.NotFoundException;
 import ru.itmo.hpsproject.exceptions.UserAlreadyExistsException;
-import ru.itmo.hpsproject.exceptions.UserNotFoundException;
 import ru.itmo.hpsproject.model.dto.UserRegisterRequestDto;
 import ru.itmo.hpsproject.model.entity.UserEntity;
 import ru.itmo.hpsproject.repositories.UserRepository;
@@ -55,11 +54,10 @@ public class UserService implements UserDetailsService {
     public boolean existsById(Long id) {
         return userRepository.existsById(id);
     }
-    public void deleteUser(Long id) throws UserNotFoundException {
-        if (!existsById(id)) throw new UserNotFoundException("Пользователь с id " + id + " не найден");
+    public void deleteUser(Long id) throws NotFoundException {
+        if (!existsById(id)) throw new NotFoundException("Пользователь с id " + id + " не найден");
         userRepository.deleteById(id);
     }
-
 
     public boolean existsByUsername(String username) {
         return userRepository.existsByUsername(username);
