@@ -2,6 +2,7 @@ package ru.itmo.hpsproject.controllers;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -35,7 +36,7 @@ public class MarketplaceController {
     public ResponseEntity<List<MarketplaceItemDto>> getAll(
             @Positive @RequestParam(defaultValue = "1") int minPrice,
             @Positive @RequestParam(defaultValue = "1000000") int maxPrice,
-            @Positive @RequestParam(defaultValue = "1") int page,
+            @PositiveOrZero @RequestParam(defaultValue = "0") int page,
             @RequestParam(required = false) String sortOrder
     ) {
 
