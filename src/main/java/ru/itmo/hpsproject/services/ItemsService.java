@@ -2,32 +2,30 @@ package ru.itmo.hpsproject.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.itmo.hpsproject.exeptions.NotFoundException;
+import ru.itmo.hpsproject.exceptions.NotFoundException;
 import ru.itmo.hpsproject.model.entity.ItemEntity;
 import ru.itmo.hpsproject.model.entity.UserEntity;
 import ru.itmo.hpsproject.model.enums.Rarity;
 import ru.itmo.hpsproject.repositories.ItemsRepository;
-import ru.itmo.hpsproject.repositories.UsersRepository;
+import ru.itmo.hpsproject.repositories.UserRepository;
 
 import java.util.Optional;
 import java.util.Random;
-
-import static ru.itmo.hpsproject.model.enums.Rarity.*;
 
 @Service
 public class ItemsService {
 
     private final ItemsRepository itemsRepository;
-    private final UsersRepository usersRepository;
+    private final UserRepository userRepository;
 
     @Autowired
-    public ItemsService(ItemsRepository itemsRepository, UsersRepository usersRepository) {
+    public ItemsService(ItemsRepository itemsRepository, UserRepository userRepository) {
         this.itemsRepository = itemsRepository;
-        this.usersRepository = usersRepository;
+        this.userRepository = userRepository;
     }
 
     public ItemEntity generateRandomItemForUser(Long userId) throws NotFoundException {
-        UserEntity user = usersRepository.findById(userId)
+        UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Юзер с id: " + userId + " не найден"));
 
         ItemEntity randomItem = createRandomItem();

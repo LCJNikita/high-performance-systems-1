@@ -4,14 +4,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import ru.itmo.hpsproject.exeptions.NotEnoughMoneyException;
-import ru.itmo.hpsproject.exeptions.NotFoundException;
+import ru.itmo.hpsproject.exceptions.UserNotFoundException;
+import ru.itmo.hpsproject.exceptions.NotFoundException;
 import ru.itmo.hpsproject.model.entity.ItemEntity;
 import ru.itmo.hpsproject.model.entity.MarketplaceItemEntity;
 import ru.itmo.hpsproject.model.entity.UserEntity;
 import ru.itmo.hpsproject.repositories.ItemsRepository;
 import ru.itmo.hpsproject.repositories.MarketplaceItemsRepository;
-import ru.itmo.hpsproject.repositories.UsersRepository;
+import ru.itmo.hpsproject.repositories.UserRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,17 +21,17 @@ public class MarketplaceService {
 
     private final MarketplaceItemsRepository marketplaceRepository;
     private final ItemsRepository itemsRepository;
-    private final UsersRepository usersRepository;
+    private final UserRepository userRepository;
 
     @Autowired
     public MarketplaceService(
             MarketplaceItemsRepository marketplaceRepository,
             ItemsRepository itemsRepository,
-            UsersRepository usersRepository
+            UserRepository userRepository
     ) {
         this.marketplaceRepository = marketplaceRepository;
         this.itemsRepository = itemsRepository;
-        this.usersRepository = usersRepository;
+        this.userRepository = userRepository;
     }
 
     public Page<MarketplaceItemEntity> findAll(int minPrice, int maxPrice, Pageable pageable) {
@@ -43,7 +43,7 @@ public class MarketplaceService {
     }
 
     public List<MarketplaceItemEntity> findMarketplaceItemsByUser(Long userId) throws NotFoundException {
-        UserEntity user = usersRepository.findById(userId)
+        UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User with id " + userId + " not found"));
         return marketplaceRepository.findByItemUser(user);
     }
@@ -68,8 +68,8 @@ public class MarketplaceService {
         return marketplaceRepository.save(marketplaceItemEntity);
     }
 
-    public void purchaseMarketplaceItem(Long buyerId, Long marketplaceItemId) throws NotFoundException, NotEnoughMoneyException, IllegalArgumentException {
-        UserEntity buyer = usersRepository.findById(buyerId)
+    public void purchaseMarketplaceItem(Long buyerId, Long marketplaceItemId) throws NotFoundException, UserNotFoundException.NotEnoughMoneyException, IllegalArgumentException {
+        UserEntity buyer = userRepository.findById(buyerId)
                 .orElseThrow(() -> new NotFoundException("Buyer with id " + buyerId + " not found"));
 
         MarketplaceItemEntity marketplaceItem = marketplaceRepository.findById(marketplaceItemId)
@@ -80,15 +80,15 @@ public class MarketplaceService {
         }
 
         if (buyer.getBalance() < marketplaceItem.getPrice()) {
-            throw new NotEnoughMoneyException();
+            throw new UserNotFoundException.NotEnoughMoneyException();
         }
 
         UserEntity seller = marketplaceItem.getItem().getUser();
         seller.setBalance(seller.getBalance() + marketplaceItem.getPrice());
-        usersRepository.save(seller);
+        userRepository.save(seller);
 
         buyer.setBalance(buyer.getBalance() - marketplaceItem.getPrice());
-        usersRepository.save(buyer);
+        userRepository.save(buyer);
 
         ItemEntity item = marketplaceItem.getItem();
         item.setUser(buyer);

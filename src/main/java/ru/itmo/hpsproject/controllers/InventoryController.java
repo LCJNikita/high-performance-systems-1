@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.itmo.hpsproject.exeptions.NotFoundException;
+import ru.itmo.hpsproject.exceptions.NotFoundException;
 import ru.itmo.hpsproject.model.dto.Output.ItemDto;
 import ru.itmo.hpsproject.model.entity.ItemEntity;
 import ru.itmo.hpsproject.services.InventoryService;

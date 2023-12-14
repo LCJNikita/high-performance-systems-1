@@ -10,8 +10,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.itmo.hpsproject.exeptions.NotEnoughMoneyException;
-import ru.itmo.hpsproject.exeptions.NotFoundException;
+import ru.itmo.hpsproject.exceptions.UserNotFoundException;
+import ru.itmo.hpsproject.exceptions.NotFoundException;
 import ru.itmo.hpsproject.model.dto.Input.BuyMarketplaceItemRequestDto;
 import ru.itmo.hpsproject.model.dto.Input.SellMarketplaceItemRequestDto;
 import ru.itmo.hpsproject.model.dto.Output.MarketplaceItemDto;
@@ -118,7 +118,7 @@ public class MarketplaceController {
             return ResponseEntity.ok("Покупка совершена успешно");
         } catch (NotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        } catch (NotEnoughMoneyException | IllegalArgumentException e) {
+        } catch (UserNotFoundException.NotEnoughMoneyException | IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }

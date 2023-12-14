@@ -1,4 +1,4 @@
-package ru.itmo.hpsproject.exeptions;
+package ru.itmo.hpsproject.exceptions;
 
 public class AlreadyExistsException extends Exception {
 
