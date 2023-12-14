@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import ru.itmo.hpsproject.exceptions.NotFoundException;
 import ru.itmo.hpsproject.exceptions.UserAlreadyExistsException;
 import ru.itmo.hpsproject.exceptions.UserNotFoundException;
 import ru.itmo.hpsproject.model.dto.UserRegisterRequestDto;
@@ -66,6 +67,14 @@ public class UserService implements UserDetailsService {
 
     public UserEntity getByUsername(String username) {
         return userRepository.getUserEntityByUsername(username);
+    }
+
+    public void updateBalance(Long userId, Integer newBalance) throws NotFoundException {
+        UserEntity user = findById(userId)
+                .orElseThrow(() -> new NotFoundException("User with id " + userId + " not found"));
+
+        user.setBalance(newBalance);
+        userRepository.save(user);
     }
 
     @Override

@@ -1,31 +1,25 @@
 package ru.itmo.hpsproject.services;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.itmo.hpsproject.exceptions.NotFoundException;
 import ru.itmo.hpsproject.model.entity.ItemEntity;
 import ru.itmo.hpsproject.model.entity.UserEntity;
 import ru.itmo.hpsproject.model.enums.Rarity;
 import ru.itmo.hpsproject.repositories.ItemsRepository;
-import ru.itmo.hpsproject.repositories.UserRepository;
 
 import java.util.Optional;
 import java.util.Random;
 
 @Service
+@RequiredArgsConstructor
 public class ItemsService {
 
     private final ItemsRepository itemsRepository;
-    private final UserRepository userRepository;
-
-    @Autowired
-    public ItemsService(ItemsRepository itemsRepository, UserRepository userRepository) {
-        this.itemsRepository = itemsRepository;
-        this.userRepository = userRepository;
-    }
+    private final UserService userService;
 
     public ItemEntity generateRandomItemForUser(Long userId) throws NotFoundException {
-        UserEntity user = userRepository.findById(userId)
+        UserEntity user = userService.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Юзер с id: " + userId + " не найден"));
 
         ItemEntity randomItem = createRandomItem();
@@ -44,6 +38,16 @@ public class ItemsService {
 
     public void deleteAllItems() {
         itemsRepository.deleteAll();
+    }
+
+    public void updateUserId(Long itemId, Long newUserId) throws NotFoundException {
+        ItemEntity item = findItemById(itemId);
+
+        UserEntity newUser = userService.findById(newUserId)
+                .orElseThrow(() -> new NotFoundException("User with id " + newUserId + " not found"));
+
+        item.setUser(newUser);
+        itemsRepository.save(item);
     }
 
     // MARK: - Private
