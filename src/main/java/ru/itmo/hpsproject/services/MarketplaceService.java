@@ -1,5 +1,6 @@
 package ru.itmo.hpsproject.services;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -55,7 +56,7 @@ public class MarketplaceService {
         marketplaceItemEntity.setPrice(price);
         return marketplaceRepository.save(marketplaceItemEntity);
     }
-
+    @Transactional
     public void purchaseMarketplaceItem(Long buyerId, Long marketplaceItemId) throws NotFoundException, NotEnoughMoneyException, IllegalArgumentException {
         UserEntity buyer = userService.findById(buyerId)
                 .orElseThrow(() -> new NotFoundException("Buyer with id " + buyerId + " not found"));

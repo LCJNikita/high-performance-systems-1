@@ -63,10 +63,6 @@ public class UserService implements UserDetailsService {
         return userRepository.existsByUsername(username);
     }
 
-    public UserEntity getByUsername(String username) {
-        return userRepository.getUserEntityByUsername(username);
-    }
-
     public void updateBalance(Long userId, Integer newBalance) throws NotFoundException {
         UserEntity user = findById(userId)
                 .orElseThrow(() -> new NotFoundException("User with id " + userId + " not found"));

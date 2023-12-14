@@ -25,9 +25,4 @@ public interface ItemsRepository extends JpaRepository<ItemEntity, Long> {
 
         return optionalItem;
     }
-
-//    @Modifying
-//    @Transactional
-//    @Query("update items item SET item.user = :user WHERE item.id = :itemId")
-//    void updateUserField(@Param("itemId") long itemId, @Param("user") UserEntity user);
 }
