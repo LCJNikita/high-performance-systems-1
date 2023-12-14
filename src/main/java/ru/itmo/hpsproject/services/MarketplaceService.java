@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import ru.itmo.hpsproject.exceptions.NotEnoughMoneyException;
 import ru.itmo.hpsproject.exceptions.UserNotFoundException;
 import ru.itmo.hpsproject.exceptions.NotFoundException;
 import ru.itmo.hpsproject.model.entity.ItemEntity;
@@ -68,7 +69,7 @@ public class MarketplaceService {
         return marketplaceRepository.save(marketplaceItemEntity);
     }
 
-    public void purchaseMarketplaceItem(Long buyerId, Long marketplaceItemId) throws NotFoundException, UserNotFoundException.NotEnoughMoneyException, IllegalArgumentException {
+    public void purchaseMarketplaceItem(Long buyerId, Long marketplaceItemId) throws NotFoundException, NotEnoughMoneyException, IllegalArgumentException {
         UserEntity buyer = userRepository.findById(buyerId)
                 .orElseThrow(() -> new NotFoundException("Buyer with id " + buyerId + " not found"));
 
@@ -80,7 +81,7 @@ public class MarketplaceService {
         }
 
         if (buyer.getBalance() < marketplaceItem.getPrice()) {
-            throw new UserNotFoundException.NotEnoughMoneyException();
+            throw new NotEnoughMoneyException();
         }
 
         UserEntity seller = marketplaceItem.getItem().getUser();
