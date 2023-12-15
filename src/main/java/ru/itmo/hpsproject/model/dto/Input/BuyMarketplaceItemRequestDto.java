@@ -9,8 +9,5 @@ import lombok.Setter;
 public class BuyMarketplaceItemRequestDto {
 
     @Positive
-    private Long buyerId;
-
-    @Positive
     private Long itemId;
 }

@@ -19,6 +19,8 @@ import ru.itmo.hpsproject.model.entity.MarketplaceItemEntity;
 import ru.itmo.hpsproject.services.MarketplaceService;
 import ru.itmo.hpsproject.utils.ControllersConstants;
 import ru.itmo.hpsproject.utils.DtoConverter;
+
+import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 
@@ -79,9 +81,9 @@ public class MarketplaceController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<?> getMarketplaceItemsByUser(@RequestParam Long userId) {
+    public ResponseEntity<?> getMarketplaceItemsByUser(Principal principal) {
         try {
-            List<MarketplaceItemEntity> marketplaceItemsEntities = marketplaceService.findMarketplaceItemsByUser(userId);
+            List<MarketplaceItemEntity> marketplaceItemsEntities = marketplaceService.findMarketplaceItemsByUser(principal.getName());
             List<MarketplaceItemDto> marketplaceItemsDtos = marketplaceItemsEntities
                     .stream()
                     .map(DtoConverter::marketplaceItemEntityToDto)
@@ -94,10 +96,12 @@ public class MarketplaceController {
 
     @PostMapping("/sell")
     public ResponseEntity<?> sellMarketplaceItem(
+            Principal principal,
             @Valid @RequestBody SellMarketplaceItemRequestDto requestDto
     ) {
         try {
             MarketplaceItemEntity entity = marketplaceService.createMarketplaceItem(
+                    principal.getName(),
                     requestDto.getItemId(),
                     requestDto.getPrice()
             );
@@ -111,10 +115,11 @@ public class MarketplaceController {
 
     @PostMapping("/buy")
     public ResponseEntity<?> buyMarketplaceItem(
+            Principal principal,
             @Valid @RequestBody BuyMarketplaceItemRequestDto requestDto
     ) {
         try {
-            marketplaceService.purchaseMarketplaceItem(requestDto.getBuyerId(), requestDto.getItemId());
+            marketplaceService.purchaseMarketplaceItem(principal.getName(), requestDto.getItemId());
             return ResponseEntity.ok("Покупка совершена успешно");
         } catch (NotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());

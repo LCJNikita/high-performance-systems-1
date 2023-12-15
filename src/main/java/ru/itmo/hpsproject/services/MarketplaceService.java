@@ -32,24 +32,29 @@ public class MarketplaceService {
         return marketplaceRepository.findByItemNameStartingWith(name);
     }
 
-    public List<MarketplaceItemEntity> findMarketplaceItemsByUser(Long userId) throws NotFoundException {
-        UserEntity user = userService.findById(userId)
-                .orElseThrow(() -> new NotFoundException("User with id " + userId + " not found"));
+    public List<MarketplaceItemEntity> findMarketplaceItemsByUser(String userName) throws NotFoundException {
+        UserEntity user = userService.findByUsername(userName)
+                .orElseThrow(() -> new NotFoundException("User with name " + userName + " not found"));
         return marketplaceRepository.findByItemUser(user);
     }
 
-    public MarketplaceItemEntity createMarketplaceItem(Long itemId, int price) throws NotFoundException, IllegalArgumentException {
+    public MarketplaceItemEntity createMarketplaceItem(
+            String userName,
+            Long itemId,
+            int price
+    ) throws NotFoundException, IllegalArgumentException {
         ItemEntity itemEntity = itemsService.findItemById(itemId);
 
         if (marketplaceRepository.existsByItem(itemEntity)) {
-            throw new IllegalArgumentException("Item with id " + itemId + " is already listed on the marketplace");
+            throw new IllegalArgumentException("Айтем с id " + itemId + " уже находится на торговой площадке");
         }
 
-//        if (!itemEntity.getUser().getItems().contains(itemEntity)) {
-//            throw new IllegalArgumentException("Item with id " + itemId + " is not item of user");
-//        }
+        UserEntity seller = userService.findByUsername(userName)
+                .orElseThrow(() -> new NotFoundException("User with name " + userName + " not found"));
 
-        // Добавить проверку, что это айтем пользователя
+        if (!seller.getItems().contains(itemEntity)) {
+            throw new IllegalArgumentException("Item with id " + itemId + " is not item of user");
+        }
 
         MarketplaceItemEntity marketplaceItemEntity = new MarketplaceItemEntity();
         marketplaceItemEntity.setItem(itemEntity);
@@ -57,9 +62,9 @@ public class MarketplaceService {
         return marketplaceRepository.save(marketplaceItemEntity);
     }
     @Transactional
-    public void purchaseMarketplaceItem(Long buyerId, Long marketplaceItemId) throws NotFoundException, NotEnoughMoneyException, IllegalArgumentException {
-        UserEntity buyer = userService.findById(buyerId)
-                .orElseThrow(() -> new NotFoundException("Buyer with id " + buyerId + " not found"));
+    public void purchaseMarketplaceItem(String buyerUserName, Long marketplaceItemId) throws NotFoundException, NotEnoughMoneyException, IllegalArgumentException {
+        UserEntity buyer = userService.findByUsername(buyerUserName)
+                .orElseThrow(() -> new NotFoundException("Buyer with userName " + buyerUserName + " not found"));
 
         MarketplaceItemEntity marketplaceItem = marketplaceRepository.findById(marketplaceItemId)
                 .orElseThrow(() -> new NotFoundException("Item with id " + marketplaceItemId + " not found on the marketplace"));
