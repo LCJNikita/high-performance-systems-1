@@ -18,15 +18,11 @@ import java.util.Map;
 @Component
 public class JwtTokenUtils {
 
-    @Value("${jwt.secret}")
+    @Value("984hg493gh0439rthr0429uruj2309yh937gc763fe87t3f89723gf")
     private String secret;
 
-    @Value("${jwt.lifetime}")
+    @Value("10m")
     private Duration jwtLifetime;
-
-//    public JwtTokenUtils(@Value("${jwt.secret}") String secret) {
-//        this.secret = Keys.hmacShaKeyFor(secret.getBytes());
-//    }
 
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();

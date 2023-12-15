@@ -35,7 +35,20 @@ public class UserEntity {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
+
     private Collection<RoleEntity> roles;
+
+    public void addRole(RoleEntity role) {
+        roles.add(role);
+    }
+
+    public void removeRole(RoleEntity role) {
+        roles.remove(role);
+    }
+
+    public void clearRoles() {
+        roles.clear();
+    }
 
 //    @ManyToMany
 //    @JoinTable(

@@ -3,7 +3,9 @@ package ru.itmo.hpsproject.services;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,8 +13,11 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import ru.itmo.hpsproject.exceptions.NotAllowedException;
 import ru.itmo.hpsproject.exceptions.NotFoundException;
 import ru.itmo.hpsproject.exceptions.UserAlreadyExistsException;
+import ru.itmo.hpsproject.exceptions.UserBlockedException;
+import ru.itmo.hpsproject.model.dto.Output.UserDto;
 import ru.itmo.hpsproject.model.dto.UserRegisterRequestDto;
 import ru.itmo.hpsproject.model.entity.UserEntity;
 import ru.itmo.hpsproject.repositories.UserRepository;
@@ -27,6 +32,8 @@ public class UserService implements UserDetailsService {
     private UserRepository userRepository;
     private RoleService roleService;
     private PasswordEncoder passwordEncoder;
+
+    private final ModelMapper mapper;
 
     @Autowired
     public void setUserRepository(UserRepository userRepository) {
@@ -65,11 +72,74 @@ public class UserService implements UserDetailsService {
 
     public void updateBalance(Long userId, Integer newBalance) throws NotFoundException {
         UserEntity user = findById(userId)
-                .orElseThrow(() -> new NotFoundException("User with id " + userId + " not found"));
-
+                .orElseThrow(() -> new NotFoundException("Пользователь с id " + userId + " не найден"));
         user.setBalance(newBalance);
         userRepository.save(user);
     }
+
+    public void replenishBalance(Long id, Integer sum, String username) throws NotFoundException, NotAllowedException {
+        UserEntity user = findById(id)
+                .orElseThrow(() -> new NotFoundException("Пользователь с " + id + " не найден"));
+        if (!user.getUsername().equals(username)) throw new NotAllowedException("Операция недоступна");
+        user.setBalance(user.getBalance() + sum);
+        userRepository.save(user);
+    }
+
+    public List<UserDto> getAll(Pageable pageable) {
+        return userRepository.findAll(pageable).stream().map((user) -> (mapper.map(user, UserDto.class))).toList();
+    }
+
+    public void setAdminRole(Long id) throws NotFoundException, UserBlockedException {
+        UserEntity user = findById(id)
+                .orElseThrow(() -> new NotFoundException("Пользователь с " + id + " не найден"));
+        if (user.getRoles().contains(roleService.getBlockedUserRole())) throw new UserBlockedException("Пользователь не может быть админом, так как он в черном списке");
+        if (!user.getRoles().contains(roleService.getAdminRole())) {
+            user.addRole(roleService.getAdminRole());
+            userRepository.save(user);
+        }
+    }
+
+    public void removeAdminRole(Long id) throws NotFoundException {
+        UserEntity user = findById(id)
+                .orElseThrow(() -> new NotFoundException("Пользователь с " + id + " не найден"));
+        user.removeRole(roleService.getAdminRole());
+        userRepository.save(user);
+    }
+
+    public void setPremiumUserRole(Long id) throws NotFoundException, UserBlockedException {
+        UserEntity user = findById(id)
+                .orElseThrow(() -> new NotFoundException("Пользователь с " + id + " не найден"));
+        if (user.getRoles().contains(roleService.getBlockedUserRole())) throw new UserBlockedException("Пользователь не может быть премиумом, так как он в черном списке");
+        if (!user.getRoles().contains(roleService.getPremiumUserRole())) {
+            user.removeRole(roleService.getStandardUserRole());
+            user.addRole(roleService.getPremiumUserRole());
+            userRepository.save(user);
+        }
+    }
+
+    public void setBlockedUserRole(Long id) throws NotFoundException {
+        UserEntity user = findById(id)
+                .orElseThrow(() -> new NotFoundException("Пользователь с " + id + " не найден"));
+        user.clearRoles();
+        user.addRole(roleService.getBlockedUserRole());
+        userRepository.save(user);
+    }
+
+    public void setStandardUserRole(Long id) throws NotFoundException {
+        UserEntity user = findById(id)
+                .orElseThrow(() -> new NotFoundException("Пользователь с " + id + " не найден"));
+        if (user.getRoles().contains(roleService.getBlockedUserRole())) {
+            user.removeRole(roleService.getBlockedUserRole());
+            user.addRole(roleService.getStandardUserRole());
+        }
+        if (user.getRoles().contains(roleService.getPremiumUserRole())) {
+            user.removeRole(roleService.getPremiumUserRole());
+            user.addRole(roleService.getStandardUserRole());
+        }
+        userRepository.save(user);
+    }
+
+
 
     @Override
     @Transactional
@@ -80,7 +150,7 @@ public class UserService implements UserDetailsService {
         return new User(
                 user.getUsername(),
                 user.getPassword(),
-                user.getRoles().stream().map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toList())
+                user.getRoles().stream().map(role -> new SimpleGrantedAuthority(role.getRole().name())).collect(Collectors.toList())
         );
     }
 

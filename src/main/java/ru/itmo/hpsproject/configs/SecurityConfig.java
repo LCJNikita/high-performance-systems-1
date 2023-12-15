@@ -40,6 +40,11 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("users/replenish-balance/**").authenticated()
+                        .requestMatchers("users/delete-user",
+                                "users/set-admin-role", "users/remove-admin-role",
+                                "users/set-premium-user-role", "users/set-standard-user-role",
+                                "users/set-blocked-user-role").hasAuthority("ADMIN")
                         .requestMatchers("inventory/**").authenticated()
                         .anyRequest().permitAll())
                 .sessionManagement(

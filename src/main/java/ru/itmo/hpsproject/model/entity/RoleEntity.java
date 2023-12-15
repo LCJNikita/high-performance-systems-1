@@ -2,6 +2,7 @@ package ru.itmo.hpsproject.model.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import ru.itmo.hpsproject.model.enums.Role;
 
 @Entity
 @Data
@@ -11,6 +12,8 @@ public class RoleEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Integer id;
-    private String name;
+
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
 }
