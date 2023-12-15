@@ -1,0 +1,35 @@
+version: "3.9"
+
+volumes:
+  pg_volume:
+
+services:
+
+  hps_java_project:
+    build: .
+    restart: always
+    container_name: hps-project
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgresql_database
+    environment:
+      POSTGRES_URL: jdbc:postgresql://postgresql_database:5432/postgres
+      POSTGRES_USERNAME: ${POSTGRES_USERNAME}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+#      JWT_SECRET: ${JWT_SECRET}
+#      JWT_LIFETIME: ${JWT_LIFETIME}
+
+
+  postgresql_database:
+    image: postgres:15
+    container_name: postgresql
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_volume:/var/lib/postgresql/data
+    restart: always
+    environment:
+      POSTGRES_USERNAME: ${POSTGRES_USERNAME}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+#      POSTGRES_DB: game
