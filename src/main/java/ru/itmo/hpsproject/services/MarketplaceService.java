@@ -38,6 +38,7 @@ public class MarketplaceService {
         return marketplaceRepository.findByItemUser(user);
     }
 
+    @Transactional
     public MarketplaceItemEntity createMarketplaceItem(
             String userName,
             Long itemId,
@@ -89,11 +90,11 @@ public class MarketplaceService {
 
         marketplaceRepository.deleteById(marketplaceItemId);
     }
-
+    @Transactional
     public Optional<MarketplaceItemEntity> deleteMarketplaceItemById(Long itemId) {
         return marketplaceRepository.deleteMarketplaceItemById(itemId);
     }
-
+    @Transactional
     public void deleteAllMarketplaceItems() {
         marketplaceRepository.deleteAll();
     }

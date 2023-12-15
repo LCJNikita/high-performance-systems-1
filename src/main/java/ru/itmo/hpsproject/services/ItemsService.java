@@ -1,5 +1,6 @@
 package ru.itmo.hpsproject.services;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.itmo.hpsproject.exceptions.NotFoundException;
@@ -18,6 +19,7 @@ public class ItemsService {
     private final ItemsRepository itemsRepository;
     private final UserService userService;
 
+    @Transactional
     public ItemEntity generateRandomItemForUser(Long userId) throws NotFoundException {
         UserEntity user = userService.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Юзер с id: " + userId + " не найден"));
@@ -32,14 +34,17 @@ public class ItemsService {
                 .orElseThrow(() -> new NotFoundException("Айтем с id: " + itemId + " не найден"));
     }
 
+    @Transactional
     public Optional<ItemEntity> deleteItemById(Long itemId) {
         return itemsRepository.deleteItemById(itemId);
     }
 
+    @Transactional
     public void deleteAllItems() {
         itemsRepository.deleteAll();
     }
 
+    @Transactional
     public void updateUserId(Long itemId, Long newUserId) throws NotFoundException {
         ItemEntity item = findItemById(itemId);
 
