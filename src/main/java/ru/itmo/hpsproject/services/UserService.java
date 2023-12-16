@@ -13,10 +13,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import ru.itmo.hpsproject.exceptions.NotAllowedException;
-import ru.itmo.hpsproject.exceptions.NotFoundException;
-import ru.itmo.hpsproject.exceptions.UserAlreadyExistsException;
-import ru.itmo.hpsproject.exceptions.UserBlockedException;
+import ru.itmo.hpsproject.exceptions.*;
 import ru.itmo.hpsproject.model.dto.Output.UserDto;
 import ru.itmo.hpsproject.model.dto.UserRegisterRequestDto;
 import ru.itmo.hpsproject.model.entity.UserEntity;
@@ -79,7 +76,7 @@ public class UserService implements UserDetailsService {
 
     public void replenishBalance(Long id, Integer sum, String username) throws NotFoundException, NotAllowedException {
         UserEntity user = findById(id)
-                .orElseThrow(() -> new NotFoundException("Пользователь с " + id + " не найден"));
+                .orElseThrow(() -> new NotFoundException("Пользователь с id " + id + " не найден"));
         if (!user.getUsername().equals(username)) throw new NotAllowedException("Операция недоступна");
         user.setBalance(user.getBalance() + sum);
         userRepository.save(user);
@@ -91,7 +88,7 @@ public class UserService implements UserDetailsService {
 
     public void setAdminRole(Long id) throws NotFoundException, UserBlockedException {
         UserEntity user = findById(id)
-                .orElseThrow(() -> new NotFoundException("Пользователь с " + id + " не найден"));
+                .orElseThrow(() -> new NotFoundException("Пользователь с id " + id + " не найден"));
         if (user.getRoles().contains(roleService.getBlockedUserRole())) throw new UserBlockedException("Пользователь не может быть админом, так как он в черном списке");
         if (!user.getRoles().contains(roleService.getAdminRole())) {
             user.addRole(roleService.getAdminRole());
@@ -101,14 +98,14 @@ public class UserService implements UserDetailsService {
 
     public void removeAdminRole(Long id) throws NotFoundException {
         UserEntity user = findById(id)
-                .orElseThrow(() -> new NotFoundException("Пользователь с " + id + " не найден"));
+                .orElseThrow(() -> new NotFoundException("Пользователь с id " + id + " не найден"));
         user.removeRole(roleService.getAdminRole());
         userRepository.save(user);
     }
 
     public void setPremiumUserRole(Long id) throws NotFoundException, UserBlockedException {
         UserEntity user = findById(id)
-                .orElseThrow(() -> new NotFoundException("Пользователь с " + id + " не найден"));
+                .orElseThrow(() -> new NotFoundException("Пользователь с id " + id + " не найден"));
         if (user.getRoles().contains(roleService.getBlockedUserRole())) throw new UserBlockedException("Пользователь не может быть премиумом, так как он в черном списке");
         if (!user.getRoles().contains(roleService.getPremiumUserRole())) {
             user.removeRole(roleService.getStandardUserRole());
@@ -119,7 +116,7 @@ public class UserService implements UserDetailsService {
 
     public void setBlockedUserRole(Long id) throws NotFoundException {
         UserEntity user = findById(id)
-                .orElseThrow(() -> new NotFoundException("Пользователь с " + id + " не найден"));
+                .orElseThrow(() -> new NotFoundException("Пользователь с id " + id + " не найден"));
         user.clearRoles();
         user.addRole(roleService.getBlockedUserRole());
         userRepository.save(user);
@@ -127,7 +124,7 @@ public class UserService implements UserDetailsService {
 
     public void setStandardUserRole(Long id) throws NotFoundException {
         UserEntity user = findById(id)
-                .orElseThrow(() -> new NotFoundException("Пользователь с " + id + " не найден"));
+                .orElseThrow(() -> new NotFoundException("Пользователь с id " + id + " не найден"));
         if (user.getRoles().contains(roleService.getBlockedUserRole())) {
             user.removeRole(roleService.getBlockedUserRole());
             user.addRole(roleService.getStandardUserRole());
@@ -136,6 +133,17 @@ public class UserService implements UserDetailsService {
             user.removeRole(roleService.getPremiumUserRole());
             user.addRole(roleService.getStandardUserRole());
         }
+        userRepository.save(user);
+    }
+
+    public void buyPremiumAccount(Long id, String username) throws NotFoundException, NotAllowedException, NotEnoughMoneyException {
+        UserEntity user = findById(id)
+                .orElseThrow(() -> new NotFoundException("Пользователь с id " + id + " не найден"));
+        if (!user.getUsername().equals(username)) throw new NotAllowedException("Операция недоступна");
+        if (user.getBalance() < 1000) throw new NotEnoughMoneyException();
+        user.setBalance(user.getBalance() - 1000);
+        user.removeRole(roleService.getStandardUserRole());
+        user.addRole(roleService.getPremiumUserRole());
         userRepository.save(user);
     }
 

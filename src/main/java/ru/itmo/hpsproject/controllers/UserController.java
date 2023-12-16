@@ -3,14 +3,12 @@ package ru.itmo.hpsproject.controllers;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.itmo.hpsproject.exceptions.NotAllowedException;
+import ru.itmo.hpsproject.exceptions.NotEnoughMoneyException;
 import ru.itmo.hpsproject.exceptions.NotFoundException;
 import ru.itmo.hpsproject.exceptions.UserBlockedException;
 import ru.itmo.hpsproject.model.dto.Output.UserDto;
@@ -41,10 +39,8 @@ public class UserController {
             String username = principal.getName();
             userService.replenishBalance(userId, sum, username);
             return ResponseEntity.ok("Баланас успешно пополнен");
-        } catch (NotFoundException e) {
+        } catch (NotFoundException | NotAllowedException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (NotAllowedException e) {
-            return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(e.getMessage());
         }
     }
 
@@ -96,7 +92,7 @@ public class UserController {
     }
 
     @PostMapping("/set-standard-user-role")
-    public ResponseEntity<?> setStandardUserRole(@RequestParam @NotNull @Min(1) Long userId ) {
+    public ResponseEntity<?> setStandardUserRole(@RequestParam @NotNull @Min(1) Long userId) {
         try {
             userService.setStandardUserRole(userId);
             return ResponseEntity.ok("Роль успешно назначена");
@@ -105,7 +101,15 @@ public class UserController {
         }
     }
 
-
+    @PostMapping("/buy-premium-account/{userId}")
+    public ResponseEntity<?> buyPremiumAccount(Principal principal, @PathVariable @NotNull @Min(1) Long userId) {
+        try {
+            userService.buyPremiumAccount(userId, principal.getName());
+            return ResponseEntity.ok("Покупка успешно совершена");
+        } catch (NotFoundException | NotEnoughMoneyException | NotAllowedException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }
 
 

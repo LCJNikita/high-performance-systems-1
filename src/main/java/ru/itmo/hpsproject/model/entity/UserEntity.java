@@ -25,6 +25,7 @@ public class UserEntity {
     private String password;
     private String username;
     private Integer balance;
+    private String description;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ItemEntity> items;
@@ -49,13 +50,5 @@ public class UserEntity {
     public void clearRoles() {
         roles.clear();
     }
-
-//    @ManyToMany
-//    @JoinTable(
-//            name = "friends",
-//            joinColumns = @JoinColumn(name = "first_user_id", referencedColumnName = "user_id", nullable = false),
-//            inverseJoinColumns = @JoinColumn(name = "second_user_id", referencedColumnName = "user_id", nullable = false)
-//    )
-//    private Collection<UserEntity> friends;
 
 }
