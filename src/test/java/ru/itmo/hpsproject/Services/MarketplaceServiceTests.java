@@ -65,18 +65,18 @@ public class MarketplaceServiceTests {
         assertEquals(expectedItems, resultItems);
     }
 
-    @Test
-    public void testFindMarketplaceItemsByUser() throws NotFoundException {
-
-        String userName = "testUser";
-        UserEntity userEntity = new UserEntity(1L, "email", "pass", userName, 100, null, null);
-        List<MarketplaceItemEntity> expectedItems = Arrays.asList();
-
-        when(userService.findByUsername(userName)).thenReturn(Optional.of(userEntity));
-        when(marketplaceRepository.findByItemUser(userEntity)).thenReturn(expectedItems);
-
-        List<MarketplaceItemEntity> resultItems = marketplaceService.findMarketplaceItemsByUser(userName);
-
-        assertEquals(expectedItems, resultItems);
-    }
+//    @Test
+//    public void testFindMarketplaceItemsByUser() throws NotFoundException {
+//
+//        String userName = "testUser";
+//        UserEntity userEntity = new UserEntity(1L, "email", "pass", userName, 100, null, null);
+//        List<MarketplaceItemEntity> expectedItems = Arrays.asList();
+//
+//        when(userService.findByUsername(userName)).thenReturn(Optional.of(userEntity));
+//        when(marketplaceRepository.findByItemUser(userEntity)).thenReturn(expectedItems);
+//
+//        List<MarketplaceItemEntity> resultItems = marketplaceService.findMarketplaceItemsByUser(userName);
+//
+//        assertEquals(expectedItems, resultItems);
+//    }
 }

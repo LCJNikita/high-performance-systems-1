@@ -40,7 +40,7 @@ class InventoryServiceTests {
         // Given
         Long userId = 1L;
 
-        UserEntity user = new UserEntity(userId, "email", "pass", "username", 100, null, null);
+        UserEntity user = new UserEntity(userId, "email", "pass", "username", 100, "description", null, null);
         ItemEntity item1 = new ItemEntity(1L, "Item1", Rarity.STANDART, user);
         ItemEntity item2 = new ItemEntity(2L, "Item2", Rarity.RARE, user);
         List<ItemEntity> expectedInventory = Arrays.asList(item1, item2);
