@@ -4,7 +4,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import ru.itmo.hpsproject.exceptions.NotFoundException;
 import ru.itmo.hpsproject.model.entity.ItemEntity;
@@ -21,22 +23,23 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
-//@Testcontainers
-//@SpringBootTest
+@Testcontainers
+@SpringBootTest
 @ExtendWith(MockitoExtension.class)
 class InventoryServiceTests {
 
-    @Mock
+    @MockBean
     private ItemsRepository itemsRepository;
 
-    @Mock
+    @MockBean
     private UserService userService;
 
-    @InjectMocks
+    @Autowired
     private InventoryService inventoryService;
 
     @Test
     void findUserInventory_WithValidUserId_ReturnsUserInventory() throws NotFoundException {
+
         // Given
         Long userId = 1L;
 
@@ -59,19 +62,32 @@ class InventoryServiceTests {
 
     @Test
     void findUserInventory_WithInvalidUserId_ThrowsNotFoundException() {
-        // Arrange
+
+        // Given
         Long invalidUserId = 999L;
 
         when(userService.findById(invalidUserId)).thenReturn(Optional.empty());
 
-        // Act and Assert
+        // When
         NotFoundException exception = org.junit.jupiter.api.Assertions.assertThrows(
                 NotFoundException.class,
                 () -> inventoryService.findUserInventory(invalidUserId)
         );
 
+        // Then
         assertEquals("Юзер с id: 999 не найден", exception.getMessage());
         verify(userService, times(1)).findById(invalidUserId);
         verifyNoInteractions(itemsRepository);
     }
 }
+
+// For local testing:
+
+//    @Mock
+//    private ItemsRepository itemsRepository;
+//
+//    @Mock
+//    private UserService userService;
+//
+//    @InjectMocks
+//    private InventoryService inventoryService;

@@ -5,7 +5,7 @@ import ru.itmo.hpsproject.model.dto.Output.MarketplaceItemDto;
 import ru.itmo.hpsproject.model.entity.ItemEntity;
 import ru.itmo.hpsproject.model.entity.MarketplaceItemEntity;
 
-public class DtoConverter {
+public final class DtoConverter {
 
     public static ItemDto itemEntityToDto(ItemEntity itemEntity) {
         return new ItemDto(itemEntity.getId(), itemEntity.getName(), itemEntity.getRarity());
