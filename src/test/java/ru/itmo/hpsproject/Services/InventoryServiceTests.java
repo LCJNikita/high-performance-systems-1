@@ -1,8 +1,6 @@
 package ru.itmo.hpsproject.Services;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -43,7 +41,7 @@ class InventoryServiceTests {
         // Given
         Long userId = 1L;
 
-        UserEntity user = new UserEntity(userId, "email", "pass", "username", 100, "description", null, null);
+        UserEntity user = new UserEntity(userId, "email", "pass", "username", "description", 100, null, null);
         ItemEntity item1 = new ItemEntity(1L, "Item1", Rarity.STANDART, user);
         ItemEntity item2 = new ItemEntity(2L, "Item2", Rarity.RARE, user);
         List<ItemEntity> expectedInventory = Arrays.asList(item1, item2);

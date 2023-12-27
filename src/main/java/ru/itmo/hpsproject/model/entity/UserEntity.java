@@ -24,8 +24,8 @@ public class UserEntity {
     private String email;
     private String password;
     private String username;
-    private Integer balance;
     private String description;
+    private Integer balance;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ItemEntity> items;

@@ -146,10 +146,7 @@ public class UserService implements UserDetailsService {
         user.addRole(roleService.getPremiumUserRole());
         userRepository.save(user);
     }
-
-
-
-    @Override
+    
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         UserEntity user = findByUsername(username).orElseThrow(

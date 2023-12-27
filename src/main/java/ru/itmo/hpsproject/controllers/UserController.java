@@ -23,6 +23,7 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
+
     @DeleteMapping("/delete-user")
     public ResponseEntity<?> deleteUser(@RequestParam @NotNull @Min(1) Long userId) {
         try {

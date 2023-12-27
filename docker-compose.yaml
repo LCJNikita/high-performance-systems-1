@@ -17,8 +17,8 @@ services:
       POSTGRES_URL: jdbc:postgresql://postgresql_database:5432/postgres
       POSTGRES_USERNAME: ${POSTGRES_USERNAME}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-#      JWT_SECRET: ${JWT_SECRET}
-#      JWT_LIFETIME: ${JWT_LIFETIME}
+      JWT_SECRET: 984hg493gh0439rthr0429uruj2309yh937gc763fe87t3f89723gf
+      JWT_LIFETIME: 10m
 
 
   postgresql_database:
@@ -32,4 +32,4 @@ services:
     environment:
       POSTGRES_USERNAME: ${POSTGRES_USERNAME}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-#      POSTGRES_DB: game
+      POSTGRES_DB: postgres
